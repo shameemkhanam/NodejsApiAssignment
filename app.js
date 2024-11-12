@@ -3,6 +3,11 @@
 const express = require('express');
 require('./schedulers/scheduler');
 const morgan = require('morgan');
+const ratelimit = require('express-rate-limit'); 
+const helmet = require('helmet'); //adds security headers
+const sanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+const hpp = require('hpp');
 
 const productsRouter = require('./Routes/productsRoutes');
 const authRouter = require('./Routes/authRouter');
@@ -17,7 +22,23 @@ const globalErrorHandler = require('./Controllers/errorController');
 
 let app = express();
 
-app.use(express.json()); //req body => json data
+app.use(helmet());
+
+let limiter = ratelimit({
+    max: 1000,
+    windowMs : 60*60*1000,   //no. of millisec in one hour
+    message: 'We have received too many requests from this IP address. Plz try after one hour'
+});
+app.use('/api', limiter);
+
+// app.use(express.json()); //req body => json data
+app.use(express.json({limit:'10kb'})); //req body => json data
+
+app.use(sanitize());
+app.use(xss()); //cleans any user input from malitious html code
+
+app.use(hpp({whitelist:['price', 'rating']})); //prevents any parameter pollution: ex: passing 2 sorts as in  /api/products?sort=price&sort=ratings ==> here 
+//hpp will take the last param sort=ratings and sort the result
 
 app.use(morgan('dev'));
 
