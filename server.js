@@ -1,7 +1,16 @@
 //THINGS NOT RELATED TO JUST NODE ARE IN SERVER.JS
+const path = require('path');
 
 const dotenv = require('dotenv');
 dotenv.config({ path: './config.env' });
+
+// Determine environment (default to 'development' if not specified)
+// const environment = process.env.NODE_ENV || 'development';
+
+// Load environment-specific .env file
+// dotenv.config({
+//     path: path.resolve(__dirname, `./config/${environment}.env`),
+// });
 
 const mongoose = require('mongoose');
 
@@ -14,7 +23,7 @@ process.on('uncaughtException', (err)=>{
 const app = require('./app');
 
 
-// console.log(app.get('env')); //gives environment in which v r working 
+console.log('current environment:',app.get('env')); //gives environment in which v r working 
 // console.log(process.env);
 
 mongoose.connect(process.env.LOCAL_CONN_STR).then((conn) => {
@@ -39,6 +48,6 @@ process.on('unhandledRejection', (err)=>{
     });
 })
 
-
+module.exports = server;
 //  console.log(x);// here x is not defined, this line is executing synchronously, so it is exception
 // console.log(x);

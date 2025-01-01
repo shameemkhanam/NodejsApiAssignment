@@ -155,7 +155,7 @@ exports.forgotPassword = asyncErrorHandler(async(req, res, next) => {
     const user = await User.findOne({email : req.body.email});
     if(!user){
         const error = new CustomError('Could not find the user with this email..',404);
-        next(error);
+        return next(error);
     }
 
     //2. GENERATE RANDOM RESET TOKEN

@@ -63,7 +63,9 @@ const notifyUsersOfNewProducts = async () => {
 //     // timezone: 'America/New_York' // adjust timezone as necessary
 // });
 
-cron.schedule('* * * * *', () => {
-    console.log('running every minute..', Date.now());
-    notifyUsersOfNewProducts();
-  });
+if(process.env.NODE_ENV !== 'test'){
+    cron.schedule('* * * * *', () => {
+        console.log('running every minute..', Date.now());
+        notifyUsersOfNewProducts();
+    });
+}
